@@ -1,0 +1,7 @@
+[package]
+name = "chesslib"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fen = "0.1.0"
