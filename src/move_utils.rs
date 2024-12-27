@@ -1,5 +1,5 @@
 use crate::square_utils::*;
-use fen::{BoardState, PieceKind};
+use fen::{BoardState, Color, PieceKind};
 
 #[derive(PartialEq)]
 pub struct Move {
@@ -31,6 +31,19 @@ impl std::fmt::Display for Move {
     }
 }
 
+trait ToggleColor {
+    fn inverse_color(&self) -> Self;
+}
+
+impl ToggleColor for Color {
+    fn inverse_color(&self) -> Self {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
+        }
+    }
+}
+
 impl Move {
     // Generate a standard move from a starting square to an end square
     // without captures, checks etc.
@@ -55,6 +68,7 @@ impl Move {
                 if self.is_en_passant {
                     board.pieces[board.en_passant_square.unwrap() as usize] = None;
                 }
+                board.side_to_play = board.side_to_play.inverse_color();
             }
             None => return,
         }
