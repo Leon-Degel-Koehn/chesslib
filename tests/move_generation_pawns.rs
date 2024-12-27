@@ -110,7 +110,6 @@ fn promotion() {
 }
 
 #[test]
-#[ignore = "Skip this test while bishop moves are not yet implemented."]
 // in this position the pawn could move one square forwards
 // this would however leave the white king in check and as such
 // is an illegal move
@@ -123,7 +122,8 @@ fn would_leave_in_check() {
     )];
     assert!(
         !utils::contains_moves(&legal_moves, &illegal_move),
-        "Pawns cannot move and leave their own king in check"
+        "{:?}",
+        legal_moves
     );
 }
 

@@ -18,6 +18,7 @@ pub trait MoveGeneration {
     // supposed to be private
     fn generate_moves(&self) -> Vec<Move>;
     fn generate_pawn_moves(&self, square: usize) -> Vec<Move>;
+    fn generate_bishop_moves(&self, square: usize) -> Vec<Move>;
     fn generate_pawn_captures(
         &self,
         square: usize,
@@ -27,6 +28,12 @@ pub trait MoveGeneration {
     fn puts_self_in_check(&self, mov: &Move) -> bool;
     fn print_legal_moves(&self);
     fn player_in_check(&self) -> bool;
+    fn straight_line_moves(
+        &self,
+        square: usize,
+        move_dirs: Vec<(i32, i32)>,
+        can_capture: bool,
+    ) -> Vec<Move>;
 }
 
 impl MoveGeneration for BoardState {
@@ -171,12 +178,49 @@ impl MoveGeneration for BoardState {
         return moves;
     }
 
+    fn straight_line_moves(
+        &self,
+        square: usize,
+        move_dirs: Vec<(i32, i32)>,
+        can_capture: bool,
+    ) -> Vec<Move> {
+        let mut moves = Vec::new();
+        for (file_inc, rank_inc) in move_dirs {
+            let mut distance = 0;
+            loop {
+                distance += 1;
+                let target_file = add_file(square as usize, file_inc * distance);
+                let target_square = add_rank(target_file as usize, rank_inc * distance);
+                if !is_on_board(target_file) || !is_on_board(target_square) {
+                    break;
+                }
+                let target_square = target_square as usize;
+                if self.pieces[target_square].is_some() {
+                    if can_capture
+                        && self.pieces[target_square].clone().unwrap().color != self.side_to_play
+                    {
+                        moves.push(Move::standard(square, target_square));
+                    }
+                    break;
+                }
+                moves.push(Move::standard(square, target_square));
+            }
+        }
+        return moves;
+    }
+
+    fn generate_bishop_moves(&self, square: usize) -> Vec<Move> {
+        let move_dirs = vec![(1, 1), (1, -1), (-1, 1), (-1, -1)];
+        return self.straight_line_moves(square, move_dirs, true);
+    }
+
     fn generate_moves(&self) -> Vec<Move> {
         let mut moves = Vec::new();
         for (square, occupant) in self.pieces.iter().enumerate() {
             match occupant {
                 Some(piece) => match piece.kind {
                     PieceKind::Pawn => moves.append(&mut self.generate_pawn_moves(square)),
+                    PieceKind::Bishop => moves.append(&mut self.generate_bishop_moves(square)),
                     _ => {
                         // TODO: implement for the other pieces
                         continue;
