@@ -29,7 +29,11 @@ fn standard_pos_pawn_moves() {
         Move::standard(square_from_string("h2"), square_from_string("h3")),
         Move::standard(square_from_string("h2"), square_from_string("h4")),
     ];
-    assert!(utils::contains_moves(&legal_moves, &expected_moves));
+    assert!(
+        utils::contains_moves(&legal_moves, &expected_moves),
+        "{:?}",
+        legal_moves,
+    );
 }
 
 #[test]

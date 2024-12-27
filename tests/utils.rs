@@ -23,3 +23,11 @@ pub fn equal_moves(expected: &Vec<Move>, moves: &Vec<Move>) -> bool {
 pub fn no_move_starting_at(square: usize, moves: &Vec<Move>) -> bool {
     return !moves.iter().any(|m| m.start_square == square);
 }
+
+// return true iff exactly the expected moves starting from square are present in move
+#[allow(dead_code)]
+pub fn moves_starting_from(square: usize, expected: &Vec<Move>, moves: &Vec<Move>) -> bool {
+    return moves
+        .iter()
+        .all(|m| m.start_square != square || expected.contains(m));
+}
