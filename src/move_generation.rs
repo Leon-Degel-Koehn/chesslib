@@ -19,6 +19,7 @@ pub trait MoveGeneration {
     fn generate_moves(&self) -> Vec<Move>;
     fn generate_pawn_moves(&self, square: usize) -> Vec<Move>;
     fn generate_bishop_moves(&self, square: usize) -> Vec<Move>;
+    fn generate_rook_moves(&self, square: usize) -> Vec<Move>;
     fn generate_pawn_captures(
         &self,
         square: usize,
@@ -214,6 +215,11 @@ impl MoveGeneration for BoardState {
         return self.straight_line_moves(square, move_dirs, true);
     }
 
+    fn generate_rook_moves(&self, square: usize) -> Vec<Move> {
+        let move_dirs = vec![(1, 0), (0, -1), (-1, 0), (0, 1)];
+        return self.straight_line_moves(square, move_dirs, true);
+    }
+
     fn generate_moves(&self) -> Vec<Move> {
         let mut moves = Vec::new();
         for (square, occupant) in self.pieces.iter().enumerate() {
@@ -221,6 +227,7 @@ impl MoveGeneration for BoardState {
                 Some(piece) => match piece.kind {
                     PieceKind::Pawn => moves.append(&mut self.generate_pawn_moves(square)),
                     PieceKind::Bishop => moves.append(&mut self.generate_bishop_moves(square)),
+                    PieceKind::Rook => moves.append(&mut self.generate_rook_moves(square)),
                     _ => {
                         // TODO: implement for the other pieces
                         continue;
