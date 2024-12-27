@@ -90,24 +90,28 @@ fn promotion() {
             end_square: square_from_string("g8"),
             promotion: Some(fen::PieceKind::Rook),
             is_en_passant: false,
+            castles: false,
         },
         Move {
             start_square: square_from_string("g7"),
             end_square: square_from_string("g8"),
             promotion: Some(fen::PieceKind::Bishop),
             is_en_passant: false,
+            castles: false,
         },
         Move {
             start_square: square_from_string("g7"),
             end_square: square_from_string("g8"),
             promotion: Some(fen::PieceKind::Knight),
             is_en_passant: false,
+            castles: false,
         },
         Move {
             start_square: square_from_string("g7"),
             end_square: square_from_string("g8"),
             promotion: Some(fen::PieceKind::Queen),
             is_en_passant: false,
+            castles: false,
         },
     ];
     assert!(utils::equal_moves(&legal_moves, &expected_moves));
@@ -140,6 +144,7 @@ fn en_passant() {
         end_square: square_from_string("e6"),
         promotion: None,
         is_en_passant: true,
+        castles: false,
     }];
     assert!(
         utils::contains_moves(&legal_moves, &expected_moves),

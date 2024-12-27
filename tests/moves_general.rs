@@ -23,3 +23,41 @@ fn move_execution() {
         end_pos_fen
     );
 }
+
+#[test]
+fn kingside_castle() {
+    let mut position = fen::BoardState::from_fen("2k5/8/8/8/8/8/8/4K2R w K - 0 1").unwrap();
+    let mov = Move {
+        start_square: square_from_string("e1"),
+        end_square: square_from_string("g1"),
+        castles: true,
+        promotion: None,
+        is_en_passant: false,
+    };
+    mov.execute(&mut position);
+    let end_pos_fen = position.to_fen();
+    assert!(
+        end_pos_fen == "2k5/8/8/8/8/8/8/5RK1 b - - 0 1",
+        "{}",
+        end_pos_fen
+    );
+}
+
+#[test]
+fn queenside_castle() {
+    let mut position = fen::BoardState::from_fen("r3k3/8/8/8/8/8/8/5K2 b q - 0 1").unwrap();
+    let mov = Move {
+        start_square: square_from_string("e8"),
+        end_square: square_from_string("c8"),
+        castles: true,
+        promotion: None,
+        is_en_passant: false,
+    };
+    mov.execute(&mut position);
+    let end_pos_fen = position.to_fen();
+    assert!(
+        end_pos_fen == "2kr4/8/8/8/8/8/8/5K2 w - - 0 1",
+        "{}",
+        end_pos_fen
+    );
+}

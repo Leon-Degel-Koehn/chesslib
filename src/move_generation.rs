@@ -117,6 +117,7 @@ impl MoveGeneration for BoardState {
                         end_square,
                         promotion: Some(promotion_target.clone()),
                         is_en_passant,
+                        castles: false,
                     });
                 }
             } else {
@@ -125,6 +126,7 @@ impl MoveGeneration for BoardState {
                     end_square,
                     promotion: None,
                     is_en_passant,
+                    castles: false,
                 });
             }
         }
@@ -167,6 +169,7 @@ impl MoveGeneration for BoardState {
                         end_square: target_square,
                         promotion: Some(promotion_target.clone()),
                         is_en_passant: false,
+                        castles: false,
                     });
                 }
             } else {
@@ -175,6 +178,7 @@ impl MoveGeneration for BoardState {
                     end_square: target_square,
                     promotion: None,
                     is_en_passant: false,
+                    castles: false,
                 });
             }
         }
