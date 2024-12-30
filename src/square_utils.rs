@@ -23,8 +23,10 @@ pub fn file_str(square: usize) -> char {
     return (b'a' as u8 + file(square) as u8) as char;
 }
 
-pub fn is_on_board(square: i32) -> bool {
-    return square >= 0 && square < 64;
+pub fn is_on_board(rank: i32, file: i32) -> bool {
+    let rank_on_board = 0 <= rank && rank < 8;
+    let file_on_board = 0 <= file && file < 8;
+    return rank_on_board && file_on_board;
 }
 
 pub fn square_from_string(square_str: &str) -> usize {
