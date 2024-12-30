@@ -12,49 +12,6 @@ impl PieceLocalization for BoardState {
     }
 }
 
-pub trait StateCheck {
-    fn current_player_in_check(&self) -> bool;
-    fn current_player_is_checkmate(&self) -> bool;
-    fn current_player_is_stalemate(&self) -> bool;
-    fn winner(&self) -> Option<Color>;
-    fn is_draw(&self) -> bool;
-    fn insufficient_material(&self) -> bool;
-}
-
-impl StateCheck for BoardState {
-    fn current_player_in_check(&self) -> bool {
-        let mut simulation_board = duplicate_board(self);
-        simulation_board.side_to_play = Color::inverse_color(&self.side_to_play);
-        return simulation_board.player_in_check();
-    }
-    fn current_player_is_checkmate(&self) -> bool {
-        return self.legal_moves().len() == 0 && self.current_player_in_check();
-    }
-    fn current_player_is_stalemate(&self) -> bool {
-        return self.legal_moves().len() == 0 && !self.current_player_in_check();
-    }
-    fn insufficient_material(&self) -> bool {
-        for square in &self.pieces {
-            if square.clone().is_some_and(|p| p.kind != PieceKind::King) {
-                return false;
-            }
-        }
-        return true;
-    }
-    fn winner(&self) -> Option<Color> {
-        if !self.current_player_is_checkmate() {
-            return None;
-        }
-        return Some(Color::inverse_color(&self.side_to_play));
-    }
-    fn is_draw(&self) -> bool {
-        // TODO: implement draw by repetition
-        return self.fullmove_number >= 100
-            || self.insufficient_material()
-            || self.current_player_is_stalemate();
-    }
-}
-
 pub trait MoveGeneration {
     // supposed to be public
     fn legal_moves(&self) -> Vec<Move>;
@@ -87,6 +44,16 @@ pub trait MoveGeneration {
     ) -> Vec<Move>;
 }
 
+pub trait Duplication {
+    fn duplicate(&self) -> Self;
+}
+
+impl Duplication for BoardState {
+    fn duplicate(&self) -> Self {
+        BoardState::from_fen(&self.to_fen()).unwrap()
+    }
+}
+
 impl MoveGeneration for BoardState {
     fn print_legal_moves(&self) {
         for mov in self.legal_moves() {
@@ -117,7 +84,7 @@ impl MoveGeneration for BoardState {
             .any(|mov| mov.end_square as usize == king_square);
     }
     fn puts_self_in_check(&self, mov: &Move) -> bool {
-        let mut simulation_board = duplicate_board(&self);
+        let mut simulation_board = self.duplicate();
         mov.execute(&mut simulation_board);
         return simulation_board.player_in_check();
     }
@@ -384,9 +351,4 @@ impl MoveGeneration for BoardState {
         }
         return moves;
     }
-}
-
-fn duplicate_board(board: &BoardState) -> BoardState {
-    // fine to unwrap here because we know the fen will be valid
-    BoardState::from_fen(&board.to_fen()).unwrap()
 }
