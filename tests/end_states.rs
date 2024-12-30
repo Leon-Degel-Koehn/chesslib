@@ -16,6 +16,12 @@ fn white_is_stalemate() {
 }
 
 #[test]
+fn end_by_insufficient_material() {
+    let position = fen::BoardState::from_fen("8/8/3k4/8/8/8/2K5/8 b - - 0 1").unwrap();
+    assert!(position.is_draw() && position.insufficient_material());
+}
+
+#[test]
 fn game_hasnt_ended() {
     let position =
         fen::BoardState::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")

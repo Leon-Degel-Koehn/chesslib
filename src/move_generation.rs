@@ -18,6 +18,7 @@ pub trait StateCheck {
     fn current_player_is_stalemate(&self) -> bool;
     fn winner(&self) -> Option<Color>;
     fn is_draw(&self) -> bool;
+    fn insufficient_material(&self) -> bool;
 }
 
 impl StateCheck for BoardState {
@@ -32,6 +33,14 @@ impl StateCheck for BoardState {
     fn current_player_is_stalemate(&self) -> bool {
         return self.legal_moves().len() == 0 && !self.current_player_in_check();
     }
+    fn insufficient_material(&self) -> bool {
+        for square in &self.pieces {
+            if square.clone().is_some_and(|p| p.kind != PieceKind::King) {
+                return false;
+            }
+        }
+        return true;
+    }
     fn winner(&self) -> Option<Color> {
         if !self.current_player_is_checkmate() {
             return None;
@@ -40,7 +49,9 @@ impl StateCheck for BoardState {
     }
     fn is_draw(&self) -> bool {
         // TODO: implement draw by repetition
-        return self.fullmove_number >= 100 || self.current_player_is_stalemate();
+        return self.fullmove_number >= 100
+            || self.insufficient_material()
+            || self.current_player_is_stalemate();
     }
 }
 
