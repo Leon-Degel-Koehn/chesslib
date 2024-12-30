@@ -21,6 +21,7 @@ pub trait MoveGeneration {
     fn generate_bishop_moves(&self, square: usize) -> Vec<Move>;
     fn generate_rook_moves(&self, square: usize) -> Vec<Move>;
     fn generate_queen_moves(&self, square: usize) -> Vec<Move>;
+    fn generate_knight_moves(&self, square: usize) -> Vec<Move>;
     fn generate_king_moves(&self, square: usize, castling: bool) -> Vec<Move>;
     fn generate_kingside_castles(&self, square: usize) -> Vec<Move>;
     fn generate_queenside_castles(&self, square: usize) -> Vec<Move>;
@@ -324,6 +325,36 @@ impl MoveGeneration for BoardState {
         return moves;
     }
 
+    fn generate_knight_moves(&self, square: usize) -> Vec<Move> {
+        let move_dirs = vec![
+            (2, 1),
+            (2, -1),
+            (-2, 1),
+            (-2, -1),
+            (1, 2),
+            (1, -2),
+            (-1, 2),
+            (-1, -2),
+        ];
+        let mut moves = Vec::new();
+        for (file_inc, rank_inc) in move_dirs {
+            let target_file = file(square) as i32 + file_inc;
+            let target_rank = rank(square) as i32 + rank_inc;
+            if !is_on_board(target_rank, target_file) {
+                continue;
+            }
+            let target_square = add_rank(add_file(square, file_inc) as usize, rank_inc) as usize;
+            if self.pieces[target_square]
+                .clone()
+                .is_some_and(|p| p.color == self.side_to_play)
+            {
+                continue;
+            }
+            moves.push(Move::standard(square, target_square));
+        }
+        return moves;
+    }
+
     fn generate_moves(&self, castling: bool) -> Vec<Move> {
         let mut moves = Vec::new();
         for (square, occupant) in self.pieces.iter().enumerate() {
@@ -341,10 +372,7 @@ impl MoveGeneration for BoardState {
                     PieceKind::King => {
                         moves.append(&mut self.generate_king_moves(square, castling))
                     }
-                    _ => {
-                        // TODO: implement for the other pieces
-                        continue;
-                    }
+                    PieceKind::Knight => moves.append(&mut self.generate_knight_moves(square)),
                 },
                 None => continue,
             }
