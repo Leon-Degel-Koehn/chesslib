@@ -12,6 +12,38 @@ impl PieceLocalization for BoardState {
     }
 }
 
+pub trait StateCheck {
+    fn current_player_in_check(&self) -> bool;
+    fn current_player_is_checkmate(&self) -> bool;
+    fn current_player_is_stalemate(&self) -> bool;
+    fn winner(&self) -> Option<Color>;
+    fn is_draw(&self) -> bool;
+}
+
+impl StateCheck for BoardState {
+    fn current_player_in_check(&self) -> bool {
+        let mut simulation_board = duplicate_board(self);
+        simulation_board.side_to_play = Color::inverse_color(&self.side_to_play);
+        return simulation_board.player_in_check();
+    }
+    fn current_player_is_checkmate(&self) -> bool {
+        return self.legal_moves().len() == 0 && self.current_player_in_check();
+    }
+    fn current_player_is_stalemate(&self) -> bool {
+        return self.legal_moves().len() == 0 && !self.current_player_in_check();
+    }
+    fn winner(&self) -> Option<Color> {
+        if !self.current_player_is_checkmate() {
+            return None;
+        }
+        return Some(Color::inverse_color(&self.side_to_play));
+    }
+    fn is_draw(&self) -> bool {
+        // TODO: implement draw by repetition
+        return self.fullmove_number >= 100 || self.current_player_is_stalemate();
+    }
+}
+
 pub trait MoveGeneration {
     // supposed to be public
     fn legal_moves(&self) -> Vec<Move>;

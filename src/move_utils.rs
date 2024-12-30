@@ -36,7 +36,7 @@ impl std::fmt::Display for Move {
     }
 }
 
-trait ToggleColor {
+pub trait ToggleColor {
     fn inverse_color(&self) -> Self;
 }
 
