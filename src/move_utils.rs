@@ -1,7 +1,7 @@
 use crate::square_utils::*;
 use fen::{BoardState, Color, PieceKind};
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Clone)]
 pub struct Move {
     pub start_square: usize,
     pub end_square: usize,
