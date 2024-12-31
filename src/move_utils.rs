@@ -95,6 +95,25 @@ impl Move {
         };
     }
 
+    pub fn to_long_algebraic(&self) -> String {
+        let mut promotion = "";
+        if let Some(promotion_piece) = &self.promotion {
+            promotion = match promotion_piece {
+                PieceKind::Rook => "r",
+                PieceKind::Knight => "n",
+                PieceKind::Bishop => "b",
+                PieceKind::Queen => "q",
+                _ => "",
+            }
+        }
+        return format!(
+            "{}{}{}",
+            square_to_string(self.start_square),
+            square_to_string(self.end_square),
+            promotion,
+        );
+    }
+
     pub fn execute(&self, board: &mut BoardState) {
         match &board.pieces[self.start_square] {
             Some(piece) => {

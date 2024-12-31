@@ -80,3 +80,21 @@ fn king_move_ends_castling() {
         position.to_fen()
     );
 }
+
+#[test]
+fn regular_move_to_string() {
+    let position =
+        fen::BoardState::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+            .unwrap();
+    let expected = "e2e4";
+    let mov = Move::from_long_algebraic(expected.to_string(), &position);
+    assert!(expected == mov.to_long_algebraic());
+}
+
+#[test]
+fn promotion_to_string() {
+    let position = fen::BoardState::from_fen("8/6P1/8/8/8/8/8/8 w - - 0 1").unwrap();
+    let expected = "g7g8q";
+    let mov = Move::from_long_algebraic(expected.to_string(), &position);
+    assert!(expected == mov.to_long_algebraic());
+}
