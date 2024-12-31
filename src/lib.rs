@@ -16,19 +16,21 @@ pub struct Game {
 impl Game {
     // Generate a new game from the standard starting position
     pub fn new() -> Self {
-        Self {
-            board: BoardState::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-                .unwrap(),
-            previous_positions: HashMap::new(),
-            draw_by_repetition: false,
-        }
+        Self::start_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
     }
 
     // Generate a new game starting from the given fen state
     pub fn start_from_fen(fen: &str) -> Self {
         Self {
             board: BoardState::from_fen(fen).expect("Game can't be constructed from invalid fen"),
-            previous_positions: HashMap::new(),
+            previous_positions: HashMap::from([(
+                fen.to_string()
+                    .split_whitespace()
+                    .take(2)
+                    .collect::<Vec<_>>()
+                    .join(" "),
+                1,
+            )]),
             draw_by_repetition: false,
         }
     }
@@ -39,7 +41,7 @@ impl Game {
             .board
             .to_fen()
             .split_whitespace()
-            .take(3)
+            .take(2)
             .collect::<Vec<_>>()
             .join(" ");
         let mut new_val: usize = 1;

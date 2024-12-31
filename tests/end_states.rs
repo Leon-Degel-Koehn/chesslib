@@ -67,7 +67,11 @@ fn draw_by_repetition() {
         square_from_string("e7"),
         square_from_string("e8"),
     ));
-    assert!(game.draw_by_repetition);
+    assert!(
+        game.draw_by_repetition,
+        "3-fold repetition did not cause a draw: {:?}",
+        game.previous_positions,
+    );
     assert!(game.is_draw());
 }
 
