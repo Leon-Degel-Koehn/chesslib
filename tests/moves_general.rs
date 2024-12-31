@@ -61,3 +61,22 @@ fn queenside_castle() {
         end_pos_fen
     );
 }
+
+#[test]
+fn king_move_ends_castling() {
+    let mut position = fen::BoardState::from_fen(
+        "rnbqk2r/pppp1ppp/5n2/4p3/1P1PP3/5N1P/PP3PP1/RNBQKB1R b KQkq - 0 6",
+    )
+    .unwrap();
+    let mov = Move::from_long_algebraic("e8e7".to_string(), &position);
+    mov.execute(&mut position);
+    let mov = Move::from_long_algebraic("f1e2".to_string(), &position);
+    mov.execute(&mut position);
+    let mov = Move::from_long_algebraic("e7e8".to_string(), &position);
+    mov.execute(&mut position);
+    assert!(
+        !position.black_can_oo && !position.black_can_ooo,
+        "{}",
+        position.to_fen()
+    );
+}

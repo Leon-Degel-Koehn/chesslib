@@ -62,12 +62,77 @@ impl Move {
         };
     }
 
+    pub fn from_long_algebraic(move_str: String, board: &BoardState) -> Move {
+        let start_square = square_from_string(&move_str[0..2]);
+        let end_square = square_from_string(&move_str[2..4]);
+        let is_en_passant = board
+            .en_passant_square
+            .is_some_and(|s| s as usize == end_square);
+        let castles = board.pieces[start_square]
+            .clone()
+            .is_some_and(|p| p.kind == PieceKind::King)
+            && match board.side_to_play {
+                Color::White => start_square == 4 && start_square.abs_diff(end_square) == 2,
+                Color::Black => start_square == 60 && start_square.abs_diff(end_square) == 2,
+            };
+        let promotion = if move_str.len() > 4 {
+            match move_str.chars().collect::<Vec<char>>()[4] {
+                'q' => Some(PieceKind::Queen),
+                'r' => Some(PieceKind::Rook),
+                'n' => Some(PieceKind::Knight),
+                'b' => Some(PieceKind::Bishop),
+                _ => panic!("Chesslib was asked to promote a pawn to an invalid piece"),
+            }
+        } else {
+            None
+        };
+        return Move {
+            start_square,
+            end_square,
+            promotion,
+            is_en_passant,
+            castles,
+        };
+    }
+
     pub fn execute(&self, board: &mut BoardState) {
         match &board.pieces[self.start_square] {
             Some(piece) => {
                 let mut end_piece = piece.clone();
                 if let Some(promotion_piece) = &self.promotion {
                     end_piece.kind = promotion_piece.clone();
+                }
+                if piece.kind == PieceKind::King {
+                    match board.side_to_play {
+                        Color::White => {
+                            board.white_can_oo = false;
+                            board.white_can_ooo = false;
+                        }
+                        Color::Black => {
+                            board.black_can_oo = false;
+                            board.black_can_ooo = false;
+                        }
+                    }
+                }
+                if piece.kind == PieceKind::Rook {
+                    match board.side_to_play {
+                        Color::White => {
+                            if self.start_square == 0 {
+                                board.white_can_ooo = false;
+                            }
+                            if self.start_square == 7 {
+                                board.white_can_oo = false;
+                            }
+                        }
+                        Color::Black => {
+                            if self.start_square == 56 {
+                                board.white_can_ooo = false;
+                            }
+                            if self.start_square == 63 {
+                                board.white_can_oo = false;
+                            }
+                        }
+                    }
                 }
                 board.pieces[self.start_square] = None;
                 board.pieces[self.end_square] = Some(end_piece);
