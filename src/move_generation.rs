@@ -112,7 +112,6 @@ impl MoveGeneration for BoardState {
             let end_file = file(square) as i32 + capture_dir;
             let end_rank = rank(square) as i32 + move_dir;
             if !is_on_board(end_rank, end_file) {
-                println!("{} not on board", square_to_string(square));
                 continue;
             }
             let end_square = add_rank(add_file(square, capture_dir) as usize, move_dir) as usize;
