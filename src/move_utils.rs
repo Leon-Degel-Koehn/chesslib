@@ -1,4 +1,7 @@
-use crate::square_utils::*;
+use crate::{
+    move_generation::{Duplication, MoveGeneration},
+    square_utils::*,
+};
 use fen::{BoardState, Color, PieceKind};
 
 #[derive(PartialEq, Clone)]
@@ -186,5 +189,11 @@ impl Move {
 
     pub fn is_capture(&self, board: &BoardState) -> bool {
         return board.pieces[self.end_square].is_some();
+    }
+
+    pub fn checks_opponent(&self, board: &BoardState) -> bool {
+        let mut simulation_board = board.duplicate();
+        self.execute(&mut simulation_board);
+        return board.player_in_check();
     }
 }
