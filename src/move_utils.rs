@@ -183,4 +183,8 @@ impl Move {
             None => return,
         }
     }
+
+    pub fn is_capture(&self, board: &BoardState) -> bool {
+        return board.pieces[self.end_square].is_some();
+    }
 }
