@@ -82,6 +82,20 @@ fn king_move_ends_castling() {
 }
 
 #[test]
+fn double_pawn_move_creates_ep_square() {
+    let mut position =
+        fen::BoardState::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+            .unwrap();
+    let mov = Move::from_long_algebraic("e2e4".to_string(), &position);
+    mov.execute(&mut position);
+    assert!(
+        position.en_passant_square.is_some_and(|s| s == 20),
+        "{:?}",
+        position.en_passant_square,
+    );
+}
+
+#[test]
 fn regular_move_to_string() {
     let position =
         fen::BoardState::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")

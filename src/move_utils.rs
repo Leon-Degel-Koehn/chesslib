@@ -156,6 +156,17 @@ impl Move {
                         }
                     }
                 }
+                if piece.kind == PieceKind::Pawn {
+                    if self.start_square.abs_diff(self.end_square) == 16 {
+                        if self.start_square < self.end_square {
+                            board.en_passant_square = Some((self.start_square + 8) as u8);
+                        } else {
+                            board.en_passant_square = Some((self.start_square - 8) as u8);
+                        }
+                    }
+                } else {
+                    board.en_passant_square = None;
+                }
                 board.pieces[self.start_square] = None;
                 board.pieces[self.end_square] = Some(end_piece);
                 if self.is_en_passant {
